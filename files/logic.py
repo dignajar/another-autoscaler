@@ -44,13 +44,7 @@ class Logic:
 				deployName = deploy.metadata.name
 				deployAnnotations = deploy.metadata.annotations
 
-				# Replicas for the deployment
-				replicas = 1
-				if 'another-scheduler.io/replicas' in deployAnnotations:
-					self.logs.debug({'message': 'Replicas defined by the user.', 'namespace': namespaceName, 'deployment': deployName, 'replicas': deployAnnotations['another-scheduler.io/replicas']})
-					replicas = int(deployAnnotations['another-scheduler.io/replicas'])
-
-				# Start
+				# start-time
 				startAnnotation = 'another-scheduler.io/start-time'
 				if startAnnotation in deployAnnotations:
 					self.logs.debug({'message': 'Start time detected.', 'namespace': namespaceName, 'deployment': deployName})
@@ -59,9 +53,19 @@ class Logic:
 					if croniter.match(startTime, currentTime):
 						self.logs.debug({'message': 'Start time Cron expression matched.', 'namespace': namespaceName, 'deployment': deployName, 'startTime': str(startTime), 'currentTime': str(currentTime)})
 
-						if deploy.spec.replicas != replicas:
+						# start-replicas
+						startReplicas = 1
+						startReplicasAnnotation = 'another-scheduler.io/start-replicas'
+						if startReplicasAnnotation in deployAnnotations:
+							self.logs.debug({'message': 'Start replicas defined by the user.', 'namespace': namespaceName, 'deployment': deployName, 'replicas': deployAnnotations[startReplicasAnnotation]})
+							startReplicas = int(deployAnnotations[startReplicasAnnotation])
+
+						if deploy.spec.replicas != startReplicas:
 							self.logs.info({'message': 'Deployment set to start.', 'namespace': namespaceName, 'deployment': deployName, 'startTime': str(startTime), 'availableReplicas': deploy.status.available_replicas})
-							self.k8s.setReplicas(namespaceName, deployName, replicas)
+							try:
+								self.k8s.setReplicas(namespaceName, deployName, startReplicas)
+							except:
+								self.logs.error({'message': 'There was an error increasing the replicas, don\'t worry, we\'ll try again.'})
 
 				# Stop
 				stopAnnotation = 'another-scheduler.io/stop-time'
@@ -72,9 +76,19 @@ class Logic:
 					if croniter.match(stopTime, currentTime):
 						self.logs.debug({'message': 'Stop time Cron expression matched.', 'namespace': namespaceName, 'deployment': deployName, 'stopTime': str(stopTime), 'currentTime': str(currentTime)})
 
-						if deploy.spec.replicas != 0:
+						# stop-replicas
+						stopReplicas = 0
+						stopReplicasAnnotation = 'another-scheduler.io/stop-replicas'
+						if stopReplicasAnnotation in deployAnnotations:
+							self.logs.debug({'message': 'Stop replicas defined by the user.', 'namespace': namespaceName, 'deployment': deployName, 'replicas': deployAnnotations[stopReplicasAnnotation]})
+							stopReplicas = int(deployAnnotations[stopReplicasAnnotation])
+
+						if deploy.spec.replicas != stopReplicas:
 							self.logs.info({'message': 'Deployment set to stop.', 'namespace': namespaceName, 'deployment': deployName, 'stopTime': str(stopTime), 'availableReplicas': deploy.status.available_replicas})
-							self.k8s.setReplicas(namespaceName, deployName, 0)
+							try:
+								self.k8s.setReplicas(namespaceName, deployName, stopReplicas)
+							except:
+								self.logs.error({'message': 'There was an error decreasing the replicas, don\'t worry, we\'ll try again.'})
 
 				# Restart
 				restartAnnotation = 'another-scheduler.io/restart-time'

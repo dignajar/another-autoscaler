@@ -1,22 +1,22 @@
-from datetime import datetime
-from os import environ
+import os
 import json
+from datetime import datetime,timezone
 
 class Logs:
 	def __init__(self, objectName:str):
 		self.level = 'INFO'
-		if "LOG_LEVEL" in environ:
-			self.level = environ["LOG_LEVEL"]
+		if "LOG_LEVEL" in os.environ:
+			self.level = os.environ["LOG_LEVEL"]
 
 		self.format = 'TEXT'
-		if "LOG_FORMAT" in environ:
-			self.format = environ["LOG_FORMAT"]
+		if "LOG_FORMAT" in os.environ:
+			self.format = os.environ["LOG_FORMAT"]
 
 		self.objectName = objectName
 
 	def __print__(self, level:str, extraFields:dict={}):
 		fields = {
-			'date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+			'date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
 			'level': level,
 			'objectName': self.objectName
 		}
