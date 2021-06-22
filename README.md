@@ -52,5 +52,5 @@ spec:
 
 ## Deploy Another Scheduler into Kubernetes
 ```
-kubectl apply -f https://raw.githubusercontent.com/dignajar/another-scheduler/full.yaml
+kubectl apply -f https://raw.githubusercontent.com/dignajar/another-scheduler/master/kubernetes/full.yaml
 ```
