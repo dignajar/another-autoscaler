@@ -63,8 +63,12 @@ spec:
       serviceAccountName: sa-another-scheduler
       containers:
       - name: another-scheduler
-        image: dignajar/another-scheduler:0.1
+        image: dignajar/another-scheduler:latest # Change the tag for the latest stable version
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
             name: another-scheduler
+        securityContext:
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000

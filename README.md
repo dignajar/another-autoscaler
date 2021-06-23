@@ -1,24 +1,36 @@
 # Another Scheduler
-Automatically Start and Stop pods from a deployment at a specific time by cron annotation.
+Another Scheduler is a Kubernetes controller that automatically starts, stops, or restarts pods from a deployment at a specified time using a cron annotation.
 
-Another Scheduler checks the annotation for each deployment and performs an scale up or scale down of the number replicas.
+Another Scheduler verifies the annotation of each deployment and performs an increase or decrease in the number of replicas.
 
 > The date and time must be in UTC.
+
+> The restart feature execute a rollout restart deployment.
 ## Annotations
-Stop pods at 2pm every day:
+Stop pods at 6pm every day:
 ```
-another-scheduler.io/stop-time: "00 14 * * *"
-```
-
-Start pods at 3pm every day:
-```
-another-scheduler.io/start-time: "00 15 * * *"
+another-scheduler.io/stop-time: "00 18 * * *"
 ```
 
-Start 3 pods at 6pm every day:
+Start pods at 1pm every day:
 ```
-another-scheduler.io/start-time: "00 18 * * *"
+another-scheduler.io/start-time: "00 13 * * *"
+```
+
+Start 3 pods at 2:30pm every day:
+```
+another-scheduler.io/start-time: "30 14 * * *"
 another-scheduler.io/start-replicas: "3"
+```
+
+Restart pods at 9:15am every day:
+```
+another-scheduler.io/restart-time: "15 09 * * *"
+```
+
+Restart pods at 2:30am, only on Saturday and Sunday:
+```
+another-scheduler.io/restart-time: "00 02 * * 0,6"
 ```
 ## Example: How to start pods at 2pm and stop them at 3pm every day
 The following example start `5` replicas in total at `2pm` and stop `4` of them at `3pm` every day, the deployment start with `0` replicas.
