@@ -8,9 +8,9 @@ RUN pip install -r /tmp/requirements.txt --no-cache-dir
 
 # Run as non-root
 ENV USER scheduler
-ENV UID 1000
+ENV UID 10000
 ENV GROUP scheduler
-ENV GID 1000
+ENV GID 10000
 ENV HOME /home/$USER
 RUN addgroup -g $GID -S $GROUP && adduser -u $UID -S $USER -G $GROUP
 
