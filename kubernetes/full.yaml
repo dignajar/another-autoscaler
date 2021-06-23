@@ -69,6 +69,17 @@ spec:
         - configMapRef:
             name: another-scheduler
         securityContext:
-          readOnlyRootFilesystem: true
           runAsNonRoot: true
-          runAsUser: 10000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsUser: 10001
+          capabilities:
+            drop:
+              - ALL
+        resources:
+          limits:
+            cpu: 300m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi

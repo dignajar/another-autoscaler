@@ -57,7 +57,7 @@ class Logic:
 						startReplicas = 1
 						startReplicasAnnotation = 'another-scheduler.io/start-replicas'
 						if startReplicasAnnotation in deployAnnotations:
-							self.logs.debug({'message': 'Start replicas defined by the user.', 'namespace': namespaceName, 'deployment': deployName, 'replicas': deployAnnotations[startReplicasAnnotation]})
+							self.logs.debug({'message': 'Replicas defined by the user for start.', 'namespace': namespaceName, 'deployment': deployName, 'replicas': deployAnnotations[startReplicasAnnotation]})
 							startReplicas = int(deployAnnotations[startReplicasAnnotation])
 
 						if deploy.spec.replicas != startReplicas:
@@ -80,7 +80,7 @@ class Logic:
 						stopReplicas = 0
 						stopReplicasAnnotation = 'another-scheduler.io/stop-replicas'
 						if stopReplicasAnnotation in deployAnnotations:
-							self.logs.debug({'message': 'Stop replicas defined by the user.', 'namespace': namespaceName, 'deployment': deployName, 'replicas': deployAnnotations[stopReplicasAnnotation]})
+							self.logs.debug({'message': 'Replicas defined by the user for stop.', 'namespace': namespaceName, 'deployment': deployName, 'replicas': deployAnnotations[stopReplicasAnnotation]})
 							stopReplicas = int(deployAnnotations[stopReplicasAnnotation])
 
 						if deploy.spec.replicas != stopReplicas:
