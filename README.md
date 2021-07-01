@@ -7,6 +7,14 @@ Another Scheduler read the annotation of each deployment and performs an increas
 
 > The restart feature execute a rollout restart deployment.
 
+---
+[![Docker image](https://img.shields.io/badge/Docker-image-blue.svg)](https://hub.docker.com/r/dignajar/another-scheduler)
+[![Kubernetes YAML manifests](https://img.shields.io/badge/Kubernetes-manifests-blue.svg)](https://github.com/dignajar/another-scheduler/tree/master/kubernetes)
+[![codebeat badge](https://codebeat.co/badges/f57de995-ca62-49e5-b309-82ed60570324)](https://codebeat.co/projects/github-com-dignajar-another-scheduler-master)
+[![release](https://img.shields.io/github/v/release/dignajar/another-scheduler.svg)](https://github.com/dignajar/another-scheduler/releases)
+[![license](https://img.shields.io/badge/license-MIT-green)](https://github.com/dignajar/another-scheduler/blob/master/LICENSE)
+---
+
 ## Annotations
 Stop pods at 6pm every day:
 ```
