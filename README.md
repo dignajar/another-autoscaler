@@ -13,6 +13,16 @@ Another Scheduler read the annotation of each deployment and performs an increas
 
 > The restart feature execute a rollout restart deployment.
 
+## Use cases
+- Deployments with GPU, stop them after working hours.
+- Stop deployments that are not needed on the weekend.
+- Save some money in your Kubernetes cluster after working hours or weekends.
+- Another Scheduler is a perfect combination with Cluster Autoscaler.
+## Install
+```
+# Deploy Another Scheduler into Kubernetes on default namespace
+kubectl apply -f https://raw.githubusercontent.com/dignajar/another-scheduler/master/kubernetes/full.yaml
+```
 ## Annotations
 Stop pods at 6pm every day:
 ```
@@ -76,7 +86,3 @@ spec:
         - containerPort: 80
 ```
 
-## Deploy Another Scheduler into Kubernetes
-```
-kubectl apply -f https://raw.githubusercontent.com/dignajar/another-scheduler/master/kubernetes/full.yaml
-```

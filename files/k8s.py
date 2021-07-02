@@ -1,5 +1,6 @@
 import datetime
 import pytz
+import urllib3
 from kubernetes import client,config
 
 class K8s:
@@ -7,6 +8,7 @@ class K8s:
 	def __init__(self, apiEndpoint:str='', token:str=''):
 		# Client via Bearer token
 		if token:
+			urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 			configuration = client.Configuration()
 			configuration.api_key['authorization'] = token
 			configuration.api_key_prefix['authorization'] = 'Bearer'
