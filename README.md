@@ -85,4 +85,4 @@ spec:
         - containerPort: 80
 ```
 ## GitOps / FluxCD
-To avoid conflicts with Flux and Another Autoscaler, you can remove the field `spec.replicas` from your deployment manifest and leave it to Another Autoscaler to manage the number of replicas.
+To avoid conflicts with Flux and Another Autoscaler, you can remove the field `spec.replicas` from your deployment manifest and leave Another Autoscaler to manage the number of replicas.
