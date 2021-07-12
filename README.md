@@ -15,7 +15,7 @@ Another Autoscaler read the annotation of each deployment and performs an increa
 
 ## Use cases
 - Cost savings by reducing the number of replicas after working hours or weekends.
-- GPU deployments you can stop them after working hours (this is my case in my current job).
+- GPU deployments stop them after working hours (this is my case in my current job).
 - Another Autoscaler is a perfect combination with [Cluster Autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler).
 ## Install
 ```
