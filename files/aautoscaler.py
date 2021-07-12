@@ -5,7 +5,7 @@ from dateutil import parser
 from logs import Logs
 from k8s import K8s
 
-class AScheduler:
+class AAutoscaler:
 
 	def __init__(self):
 		self.logs = Logs(self.__class__.__name__)
@@ -33,7 +33,7 @@ class AScheduler:
 		deployAnnotations = deploy.metadata.annotations
 		deployReplicas = deploy.spec.replicas
 
-		startAnnotation = 'another-scheduler.io/start-time'
+		startAnnotation = 'another-autoscaler.io/start-time'
 		if startAnnotation in deployAnnotations:
 			self.logs.debug({'message': 'Start time detected.', 'namespace': namespace, 'deployment': deployName})
 			startTime = deployAnnotations[startAnnotation]
@@ -43,7 +43,7 @@ class AScheduler:
 
 				# start-replicas
 				startReplicas = 1
-				startReplicasAnnotation = 'another-scheduler.io/start-replicas'
+				startReplicasAnnotation = 'another-autoscaler.io/start-replicas'
 				if startReplicasAnnotation in deployAnnotations:
 					self.logs.debug({'message': 'Replicas defined by the user for start.', 'namespace': namespace, 'deployment': deployName, 'startReplicas': deployAnnotations[startReplicasAnnotation]})
 					startReplicas = int(deployAnnotations[startReplicasAnnotation])
@@ -63,7 +63,7 @@ class AScheduler:
 		deployAnnotations = deploy.metadata.annotations
 		deployReplicas = deploy.spec.replicas
 
-		stopAnnotation = 'another-scheduler.io/stop-time'
+		stopAnnotation = 'another-autoscaler.io/stop-time'
 		if stopAnnotation in deployAnnotations:
 			self.logs.debug({'message': 'Stop time detected.', 'namespace': namespace, 'deployment': deployName})
 			stopTime = deployAnnotations[stopAnnotation]
@@ -73,7 +73,7 @@ class AScheduler:
 
 				# stop-replicas
 				stopReplicas = 0
-				stopReplicasAnnotation = 'another-scheduler.io/stop-replicas'
+				stopReplicasAnnotation = 'another-autoscaler.io/stop-replicas'
 				if stopReplicasAnnotation in deployAnnotations:
 					self.logs.debug({'message': 'Replicas defined by the user for stop.', 'namespace': namespace, 'deployment': deployName, 'stopReplicas': deployAnnotations[stopReplicasAnnotation]})
 					stopReplicas = int(deployAnnotations[stopReplicasAnnotation])
@@ -92,7 +92,7 @@ class AScheduler:
 		deployName = deploy.metadata.name
 		deployAnnotations = deploy.metadata.annotations
 
-		restartAnnotation = 'another-scheduler.io/restart-time'
+		restartAnnotation = 'another-autoscaler.io/restart-time'
 		if restartAnnotation in deployAnnotations:
 			self.logs.debug({'message': 'Restart time detected.', 'namespace': namespace, 'deployment': deployName})
 			restartTime = deployAnnotations[restartAnnotation]

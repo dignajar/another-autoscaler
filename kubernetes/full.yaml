@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: another-scheduler
+  name: another-autoscaler
   namespace: default
 
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: cr-another-scheduler
+  name: another-autoscaler
 rules:
 - apiGroups: [""]
   resources: ["namespaces"]
@@ -20,23 +20,23 @@ rules:
 
 ---
 kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: crb-another-scheduler
+  name: another-autoscaler
 roleRef:
   kind: ClusterRole
-  name: cr-another-scheduler
+  name: another-autoscaler
   apiGroup: rbac.authorization.k8s.io
 subjects:
 - kind: ServiceAccount
-  name: another-scheduler
+  name: another-autoscaler
   namespace: default
 
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: another-scheduler
+  name: another-autoscaler
   namespace: default
 data:
   LOG_LEVEL: "DEBUG"
@@ -47,28 +47,28 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: another-scheduler
+  name: another-autoscaler
   namespace: default
   labels:
-    app: another-scheduler
+    app: another-autoscaler
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: another-scheduler
+      app: another-autoscaler
   template:
     metadata:
       labels:
-        app: another-scheduler
+        app: another-autoscaler
     spec:
-      serviceAccountName: another-scheduler
+      serviceAccountName: another-autoscaler
       containers:
-      - name: another-scheduler
-        image: dignajar/another-scheduler:latest # Change the tag for the latest stable version
+      - name: another-autoscaler
+        image: dignajar/another-autoscaler:latest # Change the tag for the latest stable version
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
-            name: another-scheduler
+            name: another-autoscaler
         securityContext:
           runAsNonRoot: true
           allowPrivilegeEscalation: false
