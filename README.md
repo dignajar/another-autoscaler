@@ -14,10 +14,9 @@ Another Autoscaler read the annotation of each deployment and performs an increa
 > The restart feature execute a rollout restart deployment.
 
 ## Use cases
-- Deployments with GPU, stop them after working hours.
-- Stop deployments that are not needed on the weekend.
-- Save some money in your Kubernetes cluster after working hours or weekends.
-- Another Autoscaler is a perfect combination with Cluster Autoscaler.
+- Cost savings by reducing the number of replicas after working hours or weekends.
+- GPU deployments you can stop them after working hours (this is my case in my current job).
+- Another Autoscaler is a perfect combination with [Cluster Autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler).
 ## Install
 ```
 # Deploy Another Autoscaler into Kubernetes on default namespace
@@ -85,4 +84,5 @@ spec:
         ports:
         - containerPort: 80
 ```
-
+## GitOps / FluxCD
+To avoid conflicts with Flux and Another Autoscaler, you can remove the field `spec.replicas` from your deployment manifest and leave it to Another Autoscaler to manage the number of replicas.
