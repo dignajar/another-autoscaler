@@ -1,7 +1,7 @@
 name: "Docker image scanning"
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "00 04 * * *"
 
 jobs:
   Trivy-Scan:
