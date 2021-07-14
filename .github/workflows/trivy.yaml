@@ -1,23 +1,33 @@
-name: "Docker image scanning"
+name: Scan Docker image
+
 on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
   schedule:
-    - cron: "00 04 * * *"
+    - cron: '00 03 * * *'
 
 jobs:
-  Trivy-Scan:
-    runs-on: ubuntu-latest
-
+  build:
+    name: Build
+    runs-on: "ubuntu-18.04"
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Build an image from Dockerfile
+        run: |
+          docker build -t docker.io/dignajar/another-autoscaler:${{ github.sha }} .
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'docker.io/dignajar/another-autoscaler:latest'
+          image-ref: 'docker.io/dignajar/another-autoscaler:${{ github.sha }}'
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v1
