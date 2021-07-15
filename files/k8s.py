@@ -1,7 +1,7 @@
 import datetime
 import pytz
 import urllib3
-from kubernetes import client,config
+from kubernetes import client, config
 
 class K8s:
 
@@ -36,7 +36,7 @@ class K8s:
 			Returns all deployments from a namespace.
 			Label selector should be an string "app=kube-web-view".
 		'''
-		if (labelSelector):
+		if labelSelector:
 			response = self.AppsV1Api.list_namespaced_deployment(namespace=namespace, label_selector=labelSelector)
 		else:
 			response = self.AppsV1Api.list_namespaced_deployment(namespace=namespace)

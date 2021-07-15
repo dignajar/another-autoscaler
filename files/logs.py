@@ -1,8 +1,10 @@
 import os
 import json
-from datetime import datetime,timezone
+from datetime import datetime, timezone
 
 class Logs:
+
+
 	def __init__(self, objectName:str):
 		self.level = 'INFO'
 		if "LOG_LEVEL" in os.environ:
@@ -14,7 +16,7 @@ class Logs:
 
 		self.objectName = objectName
 
-	def __print__(self, level:str, extraFields:dict={}):
+	def __print__(self, level:str, extraFields:dict):
 		fields = {
 			'date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
 			'level': level,
@@ -22,25 +24,26 @@ class Logs:
 		}
 
 		# Include extra fields custom by the user
-		fields.update(extraFields)
+		if extraFields is not None:
+			fields.update(extraFields)
 
 		if self.format == 'JSON':
 			print(json.dumps(fields))
 		else:
 			print(' - '.join(map(str, fields.values())))
 
-	def error(self, extraFields:dict={}):
+	def error(self, extraFields:dict=None):
 		if self.level in ['DEBUG', 'INFO', 'WARNING', 'ERROR']:
-			self.__print__('ERROR',extraFields)
+			self.__print__('ERROR', extraFields)
 
-	def warning(self, extraFields:dict={}):
+	def warning(self, extraFields:dict=None):
 		if self.level in ['DEBUG', 'INFO', 'WARNING']:
-			self.__print__('WARNING',extraFields)
+			self.__print__('WARNING', extraFields)
 
-	def info(self, extraFields:dict={}):
+	def info(self, extraFields:dict=None):
 		if self.level in ['DEBUG', 'INFO']:
-			self.__print__('INFO',extraFields)
+			self.__print__('INFO', extraFields)
 
-	def debug(self, extraFields:dict={}):
+	def debug(self, extraFields:dict=None):
 		if self.level in ['DEBUG']:
-			self.__print__('DEBUG',extraFields)
+			self.__print__('DEBUG', extraFields)
