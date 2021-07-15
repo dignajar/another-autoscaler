@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 
 class Logs:
 
-
 	def __init__(self, objectName:str):
 		self.level = 'INFO'
 		if "LOG_LEVEL" in os.environ:
