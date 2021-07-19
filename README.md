@@ -3,7 +3,7 @@ Another Autoscaler is a Kubernetes controller that automatically starts, stops, 
 
 Another Autoscaler read the annotation of each deployment and performs an increase or decrease in the number of replicas.
 
-[![Docker image](https://img.shields.io/badge/Docker-image-blue.svg)](https://hub.docker.com/r/dignajar/another-autoscaler)
+[![Docker image](https://img.shields.io/badge/Docker-image-blue.svg)](https://github.com/dignajar/another-autoscaler/pkgs/container/another-autoscaler)
 [![Kubernetes YAML manifests](https://img.shields.io/badge/Kubernetes-manifests-blue.svg)](https://github.com/dignajar/another-autoscaler/tree/master/kubernetes)
 [![codebeat badge](https://codebeat.co/badges/f57de995-ca62-49e5-b309-82ed60570324)](https://codebeat.co/projects/github-com-dignajar-another-autoscaler-master)
 [![release](https://img.shields.io/github/v/release/dignajar/another-autoscaler.svg)](https://github.com/dignajar/another-autoscaler/releases)
