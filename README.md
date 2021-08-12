@@ -19,7 +19,7 @@ Another Autoscaler read the annotation of each deployment and performs an increa
 - Another Autoscaler is a perfect combination with [Cluster Autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler).
 ## Install
 ```
-# Deploy Another Autoscaler into Kubernetes on default namespace
+# Deploy Another Autoscaler into Kubernetes on "another" namespace
 kubectl apply -f https://raw.githubusercontent.com/dignajar/another-autoscaler/master/kubernetes/full.yaml
 ```
 ## Annotations

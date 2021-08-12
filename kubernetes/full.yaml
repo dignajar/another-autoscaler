@@ -1,9 +1,15 @@
 ---
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: another
+
+---
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: another-autoscaler
-  namespace: default
+  namespace: another
 
 ---
 kind: ClusterRole
@@ -30,14 +36,14 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: another-autoscaler
-  namespace: default
+  namespace: another
 
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: another-autoscaler
-  namespace: default
+  namespace: another
 data:
   LOG_LEVEL: "DEBUG"
   LOG_FORMAT: "JSON"
@@ -48,7 +54,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: another-autoscaler
-  namespace: default
+  namespace: another
   labels:
     app: another-autoscaler
 spec:
@@ -64,7 +70,7 @@ spec:
       serviceAccountName: another-autoscaler
       containers:
       - name: another-autoscaler
-        image: dignajar/another-autoscaler:latest # Change the tag for the latest stable version
+        image: ghcr.io/dignajar/another-autoscaler:latest # Change the tag for the latest stable version
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
