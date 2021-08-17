@@ -15,41 +15,57 @@ Another Autoscaler read the annotation of each deployment and performs an increa
 
 ## Use cases
 - Cost savings by reducing the number of replicas after working hours or weekends.
-- GPU deployments stop them after working hours (this is my case in my current job).
-- Another Autoscaler is a perfect combination with [Cluster Autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler).
-## Install
+- Stop GPU deployments during non-working hours.
+
+Another Autoscaler is a perfect combination with [Cluster Autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler).
+
+## Installation
 ```
 # Deploy Another Autoscaler into Kubernetes on "another" namespace
 kubectl apply -f https://raw.githubusercontent.com/dignajar/another-autoscaler/master/kubernetes/full.yaml
+
+# Check if Another Autoscaler is working
+kubectl get pods -n another
 ```
-## Annotations
-Stop pods at 6pm every day:
+
+## Configuration
+The following annotations for the deployments are valid (`metadata.annotations`).
+
+- `another-autoscaler.io/stop-time`: Define the date and time when the replica of the deployment will be set to 0.
+- `another-autoscaler.io/start-time` Define the date and time when the replica of the deployment will be set to 1.
+- `another-autoscaler.io/restart-time:`: Define the date and time when the rollout restart will be peformerd to a deployment.
+- `another-autoscaler.io/stop-replicas`: This is the number of replicas to set when Another Autoscaler scale down the deployment, by default is 0.
+- `another-autoscaler.io/start-replicas`: This is the number of replicas to set when Another Autoscaler scale up the deployment, by default is 1.
+
+## Examples
+
+### Stop pods at 6pm every day:
 ```
 another-autoscaler.io/stop-time: "00 18 * * *"
 ```
 
-Start pods at 1pm every day:
+### Start pods at 1pm every day:
 ```
 another-autoscaler.io/start-time: "00 13 * * *"
 ```
 
-Start 3 pods at 2:30pm every day:
+### Start 3 pods at 2:30pm every day:
 ```
 another-autoscaler.io/start-time: "30 14 * * *"
 another-autoscaler.io/start-replicas: "3"
 ```
 
-Restart pods at 9:15am every day:
+### Restart pods at 9:15am every day:
 ```
 another-autoscaler.io/restart-time: "15 09 * * *"
 ```
 
-Restart pods at 2:30am, only on Saturday and Sunday:
+### Restart pods at 2:30am, only on Saturday and Sunday:
 ```
 another-autoscaler.io/restart-time: "00 02 * * 0,6"
 ```
 
-## Example: How to start pods at 2pm and stop them at 3pm every day
+### Full example, how to start pods at 2pm and stop them at 3pm every day
 The following example start `5` replicas in total at `2pm` and stop `4` of them at `3pm` every day, the deployment start with `0` replicas.
 
 The `start-replicas` is not incremental, the value is the number of replicas will be setup by Another Autoscaler at the defined time by `start-time`.
@@ -84,5 +100,6 @@ spec:
         ports:
         - containerPort: 80
 ```
+
 ## GitOps / FluxCD
 To avoid conflicts with Flux and Another Autoscaler, you can remove the field `spec.replicas` from your deployment manifest and leave Another Autoscaler to manage the number of replicas.
