@@ -33,7 +33,7 @@ class AAutoscaler:
         deployAnnotations = deploy.metadata.annotations
         deployReplicas = deploy.spec.replicas
 
-        startAnnotation = 'another-autoscaler.io/start-time'
+        startAnnotation = 'another-autoscaler/start-time'
         if startAnnotation in deployAnnotations:
             self.logs.debug({'message': 'Start time detected.', 'namespace': namespace, 'deployment': deployName})
             startTime = deployAnnotations[startAnnotation]
@@ -43,17 +43,14 @@ class AAutoscaler:
 
                 # start-replicas
                 startReplicas = 1
-                startReplicasAnnotation = 'another-autoscaler.io/start-replicas'
+                startReplicasAnnotation = 'another-autoscaler/start-replicas'
                 if startReplicasAnnotation in deployAnnotations:
                     self.logs.debug({'message': 'Replicas defined by the user for start.', 'namespace': namespace, 'deployment': deployName, 'startReplicas': deployAnnotations[startReplicasAnnotation]})
                     startReplicas = int(deployAnnotations[startReplicasAnnotation])
 
                 if deployReplicas != startReplicas:
                     self.logs.info({'message': 'Deployment set to start.', 'namespace': namespace, 'deployment': deployName, 'startTime': str(startTime), 'availableReplicas': deploy.status.available_replicas, 'startReplicas': str(startReplicas)})
-                    try:
-                        self.k8s.setReplicas(namespace, deployName, startReplicas)
-                    except:
-                        self.logs.error({'message': 'There was an error increasing the replicas, don\'t worry, we\'ll try again.'})
+                    self.k8s.setReplicas(namespace, deployName, startReplicas)
 
     def __stop__(self, namespace:str, deploy:dict, currentTime:datetime):
         '''
@@ -63,7 +60,7 @@ class AAutoscaler:
         deployAnnotations = deploy.metadata.annotations
         deployReplicas = deploy.spec.replicas
 
-        stopAnnotation = 'another-autoscaler.io/stop-time'
+        stopAnnotation = 'another-autoscaler/stop-time'
         if stopAnnotation in deployAnnotations:
             self.logs.debug({'message': 'Stop time detected.', 'namespace': namespace, 'deployment': deployName})
             stopTime = deployAnnotations[stopAnnotation]
@@ -73,17 +70,14 @@ class AAutoscaler:
 
                 # stop-replicas
                 stopReplicas = 0
-                stopReplicasAnnotation = 'another-autoscaler.io/stop-replicas'
+                stopReplicasAnnotation = 'another-autoscaler/stop-replicas'
                 if stopReplicasAnnotation in deployAnnotations:
                     self.logs.debug({'message': 'Replicas defined by the user for stop.', 'namespace': namespace, 'deployment': deployName, 'stopReplicas': deployAnnotations[stopReplicasAnnotation]})
                     stopReplicas = int(deployAnnotations[stopReplicasAnnotation])
 
                 if deployReplicas != stopReplicas:
                     self.logs.info({'message': 'Deployment set to stop.', 'namespace': namespace, 'deployment': deployName, 'stopTime': str(stopTime), 'availableReplicas': deploy.status.available_replicas, 'stopReplicas': str(stopReplicas)})
-                    try:
-                        self.k8s.setReplicas(namespace, deployName, stopReplicas)
-                    except:
-                        self.logs.error({'message': 'There was an error decreasing the replicas, don\'t worry, we\'ll try again.'})
+                    self.k8s.setReplicas(namespace, deployName, stopReplicas)
 
     def __restart__(self, namespace:str, deploy:dict, currentTime:datetime):
         '''
@@ -92,7 +86,7 @@ class AAutoscaler:
         deployName = deploy.metadata.name
         deployAnnotations = deploy.metadata.annotations
 
-        restartAnnotation = 'another-autoscaler.io/restart-time'
+        restartAnnotation = 'another-autoscaler/restart-time'
         if restartAnnotation in deployAnnotations:
             self.logs.debug({'message': 'Restart time detected.', 'namespace': namespace, 'deployment': deployName})
             restartTime = deployAnnotations[restartAnnotation]

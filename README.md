@@ -31,38 +31,38 @@ kubectl get pods -n another
 ## Configuration
 The following annotations for the deployments are valid (`metadata.annotations`).
 
-- `another-autoscaler.io/stop-time`: Define the date and time when the replica of the deployment will be set to 0.
-- `another-autoscaler.io/start-time` Define the date and time when the replica of the deployment will be set to 1.
-- `another-autoscaler.io/restart-time:`: Define the date and time when the rollout restart will be peformerd to a deployment.
-- `another-autoscaler.io/stop-replicas`: This is the number of replicas to set when Another Autoscaler scale down the deployment, by default is 0.
-- `another-autoscaler.io/start-replicas`: This is the number of replicas to set when Another Autoscaler scale up the deployment, by default is 1.
+- `another-autoscaler/stop-time`: Define the date and time when the replica of the deployment will be set to 0.
+- `another-autoscaler/start-time` Define the date and time when the replica of the deployment will be set to 1.
+- `another-autoscaler/restart-time:`: Define the date and time when the rollout restart will be peformerd to a deployment.
+- `another-autoscaler/stop-replicas`: This is the number of replicas to set when Another Autoscaler scale down the deployment, by default is 0.
+- `another-autoscaler/start-replicas`: This is the number of replicas to set when Another Autoscaler scale up the deployment, by default is 1.
 
 ## Examples
 
 ### Stop pods at 6pm every day:
 ```
-another-autoscaler.io/stop-time: "00 18 * * *"
+another-autoscaler/stop-time: "00 18 * * *"
 ```
 
 ### Start pods at 1pm every day:
 ```
-another-autoscaler.io/start-time: "00 13 * * *"
+another-autoscaler/start-time: "00 13 * * *"
 ```
 
 ### Start 3 pods at 2:30pm every day:
 ```
-another-autoscaler.io/start-time: "30 14 * * *"
-another-autoscaler.io/start-replicas: "3"
+another-autoscaler/start-time: "30 14 * * *"
+another-autoscaler/start-replicas: "3"
 ```
 
 ### Restart pods at 9:15am every day:
 ```
-another-autoscaler.io/restart-time: "15 09 * * *"
+another-autoscaler/restart-time: "15 09 * * *"
 ```
 
 ### Restart pods at 2:30am, only on Saturday and Sunday:
 ```
-another-autoscaler.io/restart-time: "00 02 * * 0,6"
+another-autoscaler/restart-time: "00 02 * * 0,6"
 ```
 
 ### Full example, how to start pods at 2pm and stop them at 3pm every day
@@ -80,10 +80,10 @@ metadata:
   labels:
     app: nginx
   annotations:
-    another-autoscaler.io/start-time: "00 14 * * *"
-    another-autoscaler.io/start-replicas: "5"
-    another-autoscaler.io/stop-time: "00 15 * * *"
-    another-autoscaler.io/stop-replicas: "1"
+    another-autoscaler/start-time: "00 14 * * *"
+    another-autoscaler/start-replicas: "5"
+    another-autoscaler/stop-time: "00 15 * * *"
+    another-autoscaler/stop-replicas: "1"
 spec:
   replicas: 0
   selector:

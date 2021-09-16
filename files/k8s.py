@@ -2,6 +2,8 @@ import datetime
 import pytz
 import urllib3
 from kubernetes import client, config
+from kubernetes.client.rest import ApiException
+from logs import Logs
 
 class K8s:
 
@@ -28,40 +30,59 @@ class K8s:
         '''
             Returns a list of namespaces.
         '''
-        response = self.CoreV1Api.list_namespace()
-        return response.items
+        try:
+            response = self.CoreV1Api.list_namespace()
+            return response.items
+        except ApiException as e:
+            self.logs.error({'message': 'Exception when calling CoreV1Api.list_namespace', 'exception': e})
+            return []
 
     def getDeployments(self, namespace:str, labelSelector:str=False) -> list:
         '''
             Returns all deployments from a namespace.
             Label selector should be an string "app=kube-web-view".
         '''
-        if labelSelector:
-            response = self.AppsV1Api.list_namespaced_deployment(namespace=namespace, label_selector=labelSelector)
-        else:
-            response = self.AppsV1Api.list_namespaced_deployment(namespace=namespace)
-        return response.items
+        try:
+            if labelSelector:
+                response = self.AppsV1Api.list_namespaced_deployment(namespace=namespace, label_selector=labelSelector)
+            else:
+                response = self.AppsV1Api.list_namespaced_deployment(namespace=namespace)
+            return response.items
+        except ApiException as e:
+            self.logs.error({'message': 'Exception when calling AppsV1Api.list_namespaced_deployment', 'exception': e})
+            return []
 
     def getDeployment(self, namespace:str, deploymentName:str):
         '''
             Returns a particular deployment.
         '''
-        return self.AppsV1Api.read_namespaced_deployment(namespace=namespace, name=deploymentName)
+        try:
+            return self.AppsV1Api.read_namespaced_deployment(namespace=namespace, name=deploymentName)
+        except ApiException as e:
+            self.logs.error({'message': 'Exception when calling AppsV1Api.read_namespaced_deployment', 'exception': e})
+            return []
 
     def getPods(self, namespace:str, labelSelector:str, limit:int=1) -> list:
         '''
             Returns a list of pods for the label selector.
             Label selector should be an string "app=kube-web-view".
         '''
-        response = self.CoreV1Api.list_namespaced_pod(namespace=namespace, label_selector=labelSelector, limit=limit)
-        return response.items
+        try:
+            response = self.CoreV1Api.list_namespaced_pod(namespace=namespace, label_selector=labelSelector, limit=limit)
+            return response.items
+        except ApiException as e:
+            self.logs.error({'message': 'Exception when calling CoreV1Api.list_namespaced_pod', 'exception': e})
+            return []
 
     def getPodsByDeployment(self, namespace:str, deploymentName:str, limit:int=1) -> list:
         '''
             Returns a list of pods related to a deployment.
         '''
-        deploy = self.getDeployment(namespace, deploymentName)
-        matchLabels = deploy.spec.selector.match_labels
+        deployment = self.getDeployment(namespace, deploymentName)
+        if not deployment:
+            return []
+
+        matchLabels = deployment.spec.selector.match_labels
         labelSelector = ''
         for key, value in matchLabels.items():
             labelSelector += key+'='+value+','
@@ -73,6 +94,9 @@ class K8s:
             Delete all pods from a namespace filter by label selector.
         '''
         deployments = self.getDeployments(namespace=namespace, labelSelector=labelSelector)
+        if not deployments:
+            return False
+
         deployment = deployments[0]
         for labelKey, labelValue in deployment.spec.selector.match_labels.items():
             pods = self.getPods(namespace, labelKey+'='+labelValue)
@@ -80,27 +104,44 @@ class K8s:
                 self.deletePod(namespace=namespace, podName=pod.metadata.name)
         return True
 
-    def setReplicas(self, namespace:str, deploymentName:str, replicas:int):
+    def setReplicas(self, namespace:str, deploymentName:str, replicas:int) -> bool:
         '''
             Set the number of replicas of a deployment.
         '''
-        currentScale = self.AppsV1Api.read_namespaced_deployment_scale(namespace=namespace, name=deploymentName)
-        currentScale.spec.replicas = replicas
-        self.AppsV1Api.replace_namespaced_deployment_scale(namespace=namespace, name=deploymentName, body=currentScale)
+        try:
+            currentScale = self.AppsV1Api.read_namespaced_deployment_scale(namespace=namespace, name=deploymentName)
+            currentScale.spec.replicas = replicas
+            self.AppsV1Api.replace_namespaced_deployment_scale(namespace=namespace, name=deploymentName, body=currentScale)
+            return True
+        except ApiException as e:
+            self.logs.error({'message': 'Exception when calling AppsV1Api.read_namespaced_deployment_scale', 'exception': e})
+            return False
 
     def getReplicas(self, namespace:str, deploymentName:str):
         '''
             Returns the number of replicas of a deployment.
         '''
-        return self.AppsV1Api.read_namespaced_deployment_scale(namespace=namespace, name=deploymentName)
+        try:
+            return self.AppsV1Api.read_namespaced_deployment_scale(namespace=namespace, name=deploymentName)
+        except ApiException as e:
+            self.logs.error({'message': 'Exception when calling AppsV1Api.read_namespaced_deployment_scale', 'exception': e})
+            return False
 
-    def rolloutDeployment(self, namespace:str, deploymentName:str):
+    def rolloutDeployment(self, namespace:str, deploymentName:str) -> bool:
         '''
             Execute a rollout restart deployment.
         '''
         deploymentManifest = self.getDeployment(namespace, deploymentName)
+        if not deploymentManifest:
+            return False
+
         deploymentManifest.spec.template.metadata.annotations = {"kubectl.kubernetes.io/restartedAt": datetime.datetime.utcnow().replace(tzinfo=pytz.UTC).isoformat()}
-        self.AppsV1Api.replace_namespaced_deployment(namespace=namespace, name=deploymentName, body=deploymentManifest)
+        try:
+            self.AppsV1Api.replace_namespaced_deployment(namespace=namespace, name=deploymentName, body=deploymentManifest)
+            return True
+        except ApiException as e:
+            self.logs.error({'message': 'Exception when calling AppsV1Api.replace_namespaced_deployment', 'exception': e})
+            return False
 
     def getIngress(self, namespace, ingressName):
         response = self.ExtensionsV1beta1Api.read_namespaced_ingress(namespace=namespace, name=ingressName)
