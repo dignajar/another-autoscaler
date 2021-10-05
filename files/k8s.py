@@ -36,7 +36,7 @@ class K8s:
             response = self.CoreV1Api.list_namespace()
             return response.items
         except ApiException as e:
-            self.logs.error({'message': 'Exception when calling CoreV1Api.list_namespace', 'exception': e})
+            self.logs.error({'message': 'Exception when calling CoreV1Api.list_namespace'})
             return []
 
     def getDeployments(self, namespace:str, labelSelector:str=False) -> list:
@@ -51,7 +51,7 @@ class K8s:
                 response = self.AppsV1Api.list_namespaced_deployment(namespace=namespace)
             return response.items
         except ApiException as e:
-            self.logs.error({'message': 'Exception when calling AppsV1Api.list_namespaced_deployment', 'exception': e})
+            self.logs.error({'message': 'Exception when calling AppsV1Api.list_namespaced_deployment'})
             return []
 
     def getDeployment(self, namespace:str, deploymentName:str):
@@ -61,7 +61,7 @@ class K8s:
         try:
             return self.AppsV1Api.read_namespaced_deployment(namespace=namespace, name=deploymentName)
         except ApiException as e:
-            self.logs.error({'message': 'Exception when calling AppsV1Api.read_namespaced_deployment', 'exception': e})
+            self.logs.error({'message': 'Exception when calling AppsV1Api.read_namespaced_deployment'})
             return []
 
     def getPods(self, namespace:str, labelSelector:str, limit:int=1) -> list:
@@ -73,7 +73,7 @@ class K8s:
             response = self.CoreV1Api.list_namespaced_pod(namespace=namespace, label_selector=labelSelector, limit=limit)
             return response.items
         except ApiException as e:
-            self.logs.error({'message': 'Exception when calling CoreV1Api.list_namespaced_pod', 'exception': e})
+            self.logs.error({'message': 'Exception when calling CoreV1Api.list_namespaced_pod'})
             return []
 
     def getPodsByDeployment(self, namespace:str, deploymentName:str, limit:int=1) -> list:
@@ -116,7 +116,7 @@ class K8s:
             self.AppsV1Api.replace_namespaced_deployment_scale(namespace=namespace, name=deploymentName, body=currentScale)
             return True
         except ApiException as e:
-            self.logs.error({'message': 'Exception when calling AppsV1Api.read_namespaced_deployment_scale', 'exception': e})
+            self.logs.error({'message': 'Exception when calling AppsV1Api.read_namespaced_deployment_scale'})
             return False
 
     def getReplicas(self, namespace:str, deploymentName:str):
@@ -126,7 +126,7 @@ class K8s:
         try:
             return self.AppsV1Api.read_namespaced_deployment_scale(namespace=namespace, name=deploymentName)
         except ApiException as e:
-            self.logs.error({'message': 'Exception when calling AppsV1Api.read_namespaced_deployment_scale', 'exception': e})
+            self.logs.error({'message': 'Exception when calling AppsV1Api.read_namespaced_deployment_scale'})
             return False
 
     def rolloutDeployment(self, namespace:str, deploymentName:str) -> bool:
@@ -142,7 +142,7 @@ class K8s:
             self.AppsV1Api.replace_namespaced_deployment(namespace=namespace, name=deploymentName, body=deploymentManifest)
             return True
         except ApiException as e:
-            self.logs.error({'message': 'Exception when calling AppsV1Api.replace_namespaced_deployment', 'exception': e})
+            self.logs.error({'message': 'Exception when calling AppsV1Api.replace_namespaced_deployment'})
             return False
 
     def getIngress(self, namespace, ingressName):
