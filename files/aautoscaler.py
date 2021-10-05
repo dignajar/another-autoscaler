@@ -45,7 +45,7 @@ class AAutoscaler:
                 startReplicas = 1
                 startReplicasAnnotation = 'another-autoscaler/start-replicas'
                 if startReplicasAnnotation in deployAnnotations:
-                    self.logs.debug({'message': 'Replicas defined by the user for start.', 'namespace': namespace, 'deployment': deployName, 'startReplicas': deployAnnotations[startReplicasAnnotation]})
+                    self.logs.debug({'message': 'Number of replicas.', 'namespace': namespace, 'deployment': deployName, 'startReplicas': deployAnnotations[startReplicasAnnotation]})
                     startReplicas = int(deployAnnotations[startReplicasAnnotation])
 
                 if deployReplicas != startReplicas:
@@ -72,7 +72,7 @@ class AAutoscaler:
                 stopReplicas = 0
                 stopReplicasAnnotation = 'another-autoscaler/stop-replicas'
                 if stopReplicasAnnotation in deployAnnotations:
-                    self.logs.debug({'message': 'Replicas defined by the user for stop.', 'namespace': namespace, 'deployment': deployName, 'stopReplicas': deployAnnotations[stopReplicasAnnotation]})
+                    self.logs.debug({'message': 'Number of replicas.', 'namespace': namespace, 'deployment': deployName, 'stopReplicas': deployAnnotations[stopReplicasAnnotation]})
                     stopReplicas = int(deployAnnotations[stopReplicasAnnotation])
 
                 if deployReplicas != stopReplicas:

@@ -36,6 +36,7 @@ class K8s:
             response = self.CoreV1Api.list_namespace()
             return response.items
         except ApiException as e:
+            print(e)
             self.logs.error({'message': 'Exception when calling CoreV1Api.list_namespace'})
             return []
 
@@ -51,6 +52,7 @@ class K8s:
                 response = self.AppsV1Api.list_namespaced_deployment(namespace=namespace)
             return response.items
         except ApiException as e:
+            print(e)
             self.logs.error({'message': 'Exception when calling AppsV1Api.list_namespaced_deployment'})
             return []
 
@@ -61,6 +63,7 @@ class K8s:
         try:
             return self.AppsV1Api.read_namespaced_deployment(namespace=namespace, name=deploymentName)
         except ApiException as e:
+            print(e)
             self.logs.error({'message': 'Exception when calling AppsV1Api.read_namespaced_deployment'})
             return []
 
@@ -73,6 +76,7 @@ class K8s:
             response = self.CoreV1Api.list_namespaced_pod(namespace=namespace, label_selector=labelSelector, limit=limit)
             return response.items
         except ApiException as e:
+            print(e)
             self.logs.error({'message': 'Exception when calling CoreV1Api.list_namespaced_pod'})
             return []
 
@@ -116,6 +120,7 @@ class K8s:
             self.AppsV1Api.replace_namespaced_deployment_scale(namespace=namespace, name=deploymentName, body=currentScale)
             return True
         except ApiException as e:
+            print(e)
             self.logs.error({'message': 'Exception when calling AppsV1Api.read_namespaced_deployment_scale'})
             return False
 
@@ -126,6 +131,7 @@ class K8s:
         try:
             return self.AppsV1Api.read_namespaced_deployment_scale(namespace=namespace, name=deploymentName)
         except ApiException as e:
+            print(e)
             self.logs.error({'message': 'Exception when calling AppsV1Api.read_namespaced_deployment_scale'})
             return False
 
@@ -142,6 +148,7 @@ class K8s:
             self.AppsV1Api.replace_namespaced_deployment(namespace=namespace, name=deploymentName, body=deploymentManifest)
             return True
         except ApiException as e:
+            print(e)
             self.logs.error({'message': 'Exception when calling AppsV1Api.replace_namespaced_deployment'})
             return False
 
