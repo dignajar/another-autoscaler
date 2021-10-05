@@ -8,6 +8,8 @@ from logs import Logs
 class K8s:
 
     def __init__(self, apiEndpoint:str='', token:str=''):
+        self.logs = Logs(self.__class__.__name__)
+
         # Client via Bearer token
         if token:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
