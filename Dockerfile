@@ -1,6 +1,6 @@
-FROM python:3.9.7-alpine3.14
+FROM python:3.9.9-alpine3.14
 
-ENV PYTHONUNBUFFERED=0
+ENV PYTHONUNBUFFERED=1
 
 COPY files/requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt --no-cache-dir
@@ -13,9 +13,8 @@ ENV GID 10001
 ENV HOME /home/$USER
 RUN addgroup -g $GID -S $GROUP && adduser -u $UID -S $USER -G $GROUP
 
-# Python code
-COPY files/* $HOME/
-RUN chown -R $USER:$GROUP $HOME
+# Copy app
+COPY --chown=$UID:$GID ./files/ $HOME/
 
 USER $UID:$GID
 WORKDIR $HOME
