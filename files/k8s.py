@@ -5,6 +5,7 @@ from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 from logs import Logs
 
+
 class K8s:
 
     def __init__(self, apiEndpoint:str='', token:str=''):
@@ -20,13 +21,14 @@ class K8s:
             configuration.host = apiEndpoint
             self.CoreV1Api = client.CoreV1Api(client.ApiClient(configuration))
             self.AppsV1Api = client.AppsV1Api(client.ApiClient(configuration))
-            self.ExtensionsV1beta1Api = client.ExtensionsV1beta1Api(client.ApiClient(configuration))
-        # Client via in-cluster configuration, running inside a pod with proper service account
+            self.NetworkingV1Api = client.NetworkingV1Api(client.ApiClient(configuration))
+        # Client via in-cluster configuration,
+        # running inside a pod with proper service account
         else:
             config.load_incluster_config()
             self.CoreV1Api = client.CoreV1Api()
             self.AppsV1Api = client.AppsV1Api()
-            self.ExtensionsV1beta1Api = client.ExtensionsV1beta1Api()
+            self.NetworkingV1Api = client.NetworkingV1Api()
 
     def getNamespaces(self) -> list:
         '''
@@ -153,7 +155,7 @@ class K8s:
             return False
 
     def getIngress(self, namespace, ingressName):
-        response = self.ExtensionsV1beta1Api.read_namespaced_ingress(namespace=namespace, name=ingressName)
+        response = self.NetworkingV1Api.read_namespaced_ingress(namespace=namespace, name=ingressName)
         return response
 
     def getLogs(self, namespace, podName, containerName, tailLines):
