@@ -117,6 +117,11 @@ class AAutoscaler:
             # For each deployment inside the namespace
             deployments = self.k8s.getDeployments(namespaceName)
             for deploy in deployments:
-                self.__start__(namespaceName, deploy, currentTime)
-                self.__stop__(namespaceName, deploy, currentTime)
-                self.__restart__(namespaceName, deploy, currentTime)
+                deployName = deploy.metadata.name
+                try:
+                    self.__start__(namespaceName, deploy, currentTime)
+                    self.__stop__(namespaceName, deploy, currentTime)
+                    self.__restart__(namespaceName, deploy, currentTime)
+                except:
+                    self.logs.error(
+                        {'message': 'Error in annotations', 'namespace': namespaceName, 'deployment': deployName})
