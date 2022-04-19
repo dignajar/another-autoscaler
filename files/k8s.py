@@ -5,6 +5,7 @@ from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 from logs import Logs
 
+
 class K8s:
 
     def __init__(self, apiEndpoint:str='', token:str=''):
@@ -21,7 +22,8 @@ class K8s:
             self.CoreV1Api = client.CoreV1Api(client.ApiClient(configuration))
             self.AppsV1Api = client.AppsV1Api(client.ApiClient(configuration))
             self.NetworkingV1Api = client.NetworkingV1Api(client.ApiClient(configuration))
-        # Client via in-cluster configuration, running inside a pod with proper service account
+        # Client via in-cluster configuration,
+        # running inside a pod with proper service account
         else:
             config.load_incluster_config()
             self.CoreV1Api = client.CoreV1Api()
