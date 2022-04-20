@@ -1,9 +1,10 @@
 import os
 from croniter import croniter
-from datetime import date, datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta
 from dateutil import parser
 from logs import Logs
 from k8s import K8s
+
 
 class AAutoscaler:
 
@@ -19,13 +20,15 @@ class AAutoscaler:
             self.k8s = K8s(k8sAPI, k8sToken)
         # Auth via in-cluster configuration, running inside a pod
         elif 'KUBERNETES_SERVICE_HOST' in os.environ:
-            self.logs.info({'message': 'Kubernetes object via in-cluster configuration.'})
+            self.logs.info(
+                {'message': 'Kubernetes object via in-cluster configuration.'})
             self.k8s = K8s()
         else:
-            self.logs.error({'message': 'Error trying to create the Kubernetes object.'})
+            self.logs.error(
+                {'message': 'Error trying to create the Kubernetes object.'})
             raise Exception('Error trying to create the Kubernetes object.')
 
-    def __start__(self, namespace:str, deploy:dict, currentTime:datetime):
+    def __start__(self, namespace: str, deploy: dict, currentTime: datetime):
         '''
             Logic for start the pods
         '''
@@ -34,25 +37,48 @@ class AAutoscaler:
         deployReplicas = deploy.spec.replicas
 
         startAnnotation = 'another-autoscaler/start-time'
-        if startAnnotation in deployAnnotations:
-            self.logs.debug({'message': 'Start time detected.', 'namespace': namespace, 'deployment': deployName})
-            startTime = deployAnnotations[startAnnotation]
+        if startAnnotation not in deployAnnotations:
+            return
 
-            if croniter.match(startTime, currentTime):
-                self.logs.debug({'message': 'Start time Cron expression matched.', 'namespace': namespace, 'deployment': deployName, 'startTime': str(startTime), 'currentTime': str(currentTime)})
+        self.logs.debug({'message': 'Start time detected.',
+                        'namespace': namespace, 'deployment': deployName})
+        startTime = deployAnnotations[startAnnotation]
 
-                # start-replicas
-                startReplicas = 1
-                startReplicasAnnotation = 'another-autoscaler/start-replicas'
-                if startReplicasAnnotation in deployAnnotations:
-                    self.logs.debug({'message': 'Number of replicas.', 'namespace': namespace, 'deployment': deployName, 'startReplicas': deployAnnotations[startReplicasAnnotation]})
-                    startReplicas = int(deployAnnotations[startReplicasAnnotation])
+        try:
+            if not croniter.match(startTime, currentTime):
+                return
+        except:
+            self.logs.error(
+                {'message': 'Error in start-time annotation', 'namespace': namespace, 'deployment': deployName})
+            return
 
-                if deployReplicas != startReplicas:
-                    self.logs.info({'message': 'Deployment set to start.', 'namespace': namespace, 'deployment': deployName, 'startTime': str(startTime), 'availableReplicas': deploy.status.available_replicas, 'startReplicas': str(startReplicas)})
-                    self.k8s.setReplicas(namespace, deployName, startReplicas)
+        self.logs.debug({'message': 'Start time Cron expression matched.', 'namespace': namespace,
+                        'deployment': deployName, 'startTime': str(startTime), 'currentTime': str(currentTime)})
 
-    def __stop__(self, namespace:str, deploy:dict, currentTime:datetime):
+        # start-replicas
+        startReplicas = 1
+        startReplicasAnnotation = 'another-autoscaler/start-replicas'
+        if startReplicasAnnotation not in deployAnnotations:
+            return
+
+        self.logs.debug({'message': 'Number of replicas.', 'namespace': namespace,
+                        'deployment': deployName, 'startReplicas': deployAnnotations[startReplicasAnnotation]})
+        try:
+            startReplicas = int(
+                deployAnnotations[startReplicasAnnotation])
+        except:
+            startReplicas = 1
+
+        if deployReplicas == startReplicas:
+            return
+
+        self.logs.info({'message': 'Deployment set to start.', 'namespace': namespace, 'deployment': deployName,
+                        'startTime': str(startTime),
+                        'availableReplicas': deploy.status.available_replicas,
+                        'startReplicas': str(startReplicas)})
+        self.k8s.setReplicas(namespace, deployName, startReplicas)
+
+    def __stop__(self, namespace: str, deploy: dict, currentTime: datetime):
         '''
             Logic for stop the pods
         '''
@@ -61,25 +87,49 @@ class AAutoscaler:
         deployReplicas = deploy.spec.replicas
 
         stopAnnotation = 'another-autoscaler/stop-time'
-        if stopAnnotation in deployAnnotations:
-            self.logs.debug({'message': 'Stop time detected.', 'namespace': namespace, 'deployment': deployName})
-            stopTime = deployAnnotations[stopAnnotation]
+        if stopAnnotation not in deployAnnotations:
+            return
 
-            if croniter.match(stopTime, currentTime):
-                self.logs.debug({'message': 'Stop time Cron expression matched.', 'namespace': namespace, 'deployment': deployName, 'stopTime': str(stopTime), 'currentTime': str(currentTime)})
+        self.logs.debug({'message': 'Stop time detected.',
+                        'namespace': namespace, 'deployment': deployName})
+        stopTime = deployAnnotations[stopAnnotation]
 
-                # stop-replicas
-                stopReplicas = 0
-                stopReplicasAnnotation = 'another-autoscaler/stop-replicas'
-                if stopReplicasAnnotation in deployAnnotations:
-                    self.logs.debug({'message': 'Number of replicas.', 'namespace': namespace, 'deployment': deployName, 'stopReplicas': deployAnnotations[stopReplicasAnnotation]})
-                    stopReplicas = int(deployAnnotations[stopReplicasAnnotation])
+        try:
+            if not croniter.match(stopTime, currentTime):
+                return
+        except:
+            self.logs.error(
+                {'message': 'Error in stop-time annotation', 'namespace': namespace, 'deployment': deployName})
+            return
 
-                if deployReplicas != stopReplicas:
-                    self.logs.info({'message': 'Deployment set to stop.', 'namespace': namespace, 'deployment': deployName, 'stopTime': str(stopTime), 'availableReplicas': deploy.status.available_replicas, 'stopReplicas': str(stopReplicas)})
-                    self.k8s.setReplicas(namespace, deployName, stopReplicas)
+        self.logs.debug({'message': 'Stop time Cron expression matched.', 'namespace': namespace,
+                        'deployment': deployName, 'stopTime': str(stopTime), 'currentTime': str(currentTime)})
 
-    def __restart__(self, namespace:str, deploy:dict, currentTime:datetime):
+        # stop-replicas
+        stopReplicas = 0
+        stopReplicasAnnotation = 'another-autoscaler/stop-replicas'
+        if stopReplicasAnnotation not in deployAnnotations:
+            return
+
+        self.logs.debug({'message': 'Number of replicas.', 'namespace': namespace,
+                        'deployment': deployName, 'stopReplicas': deployAnnotations[stopReplicasAnnotation]})
+
+        try:
+            stopReplicas = int(
+                deployAnnotations[stopReplicasAnnotation])
+        except:
+            stopReplicas = 0
+
+        if deployReplicas == stopReplicas:
+            return
+
+        self.logs.info({'message': 'Deployment set to stop.', 'namespace': namespace, 'deployment': deployName,
+                        'stopTime': str(stopTime),
+                        'availableReplicas': deploy.status.available_replicas,
+                        'stopReplicas': str(stopReplicas)})
+        self.k8s.setReplicas(namespace, deployName, stopReplicas)
+
+    def __restart__(self, namespace: str, deploy: dict, currentTime: datetime):
         '''
             Logic for restart the pods
         '''
@@ -87,22 +137,38 @@ class AAutoscaler:
         deployAnnotations = deploy.metadata.annotations
 
         restartAnnotation = 'another-autoscaler/restart-time'
-        if restartAnnotation in deployAnnotations:
-            self.logs.debug({'message': 'Restart time detected.', 'namespace': namespace, 'deployment': deployName})
-            restartTime = deployAnnotations[restartAnnotation]
+        if restartAnnotation not in deployAnnotations:
+            return
 
-            if croniter.match(restartTime, currentTime):
-                self.logs.debug({'message': 'Restart time Cron expression matched.', 'namespace': namespace, 'deployment': deployName, 'restartTime': str(restartTime), 'currentTime': str(currentTime)})
+        self.logs.debug({'message': 'Restart time detected.',
+                        'namespace': namespace, 'deployment': deployName})
+        restartTime = deployAnnotations[restartAnnotation]
 
-                # Check if was already restarted
-                try:
-                    restartedAt = parser.parse(deploy.spec.template.metadata.annotations['kubectl.kubernetes.io/restartedAt'])
-                except:
-                    restartedAt = currentTime - timedelta(days=1)
+        try:
 
-                if ((currentTime - restartedAt).total_seconds() / 60.0) > 1:
-                    self.logs.info({'message': 'Deployment set to restart.', 'namespace': namespace, 'deployment': deployName, 'restartTime': str(restartTime), 'currentTime': str(currentTime)})
-                    self.k8s.rolloutDeployment(namespace, deployName)
+            if not croniter.match(restartTime, currentTime):
+                return
+        except:
+            self.logs.error(
+                {'message': 'Error in restart-time annotation', 'namespace': namespace, 'deployment': deployName})
+            return
+
+        self.logs.debug({'message': 'Restart time Cron expression matched.', 'namespace': namespace,
+                        'deployment': deployName, 'restartTime': str(restartTime), 'currentTime': str(currentTime)})
+
+        # Check if was already restarted
+        try:
+            restartedAt = parser.parse(
+                deploy.spec.template.metadata.annotations['kubectl.kubernetes.io/restartedAt'])
+        except:
+            restartedAt = currentTime - timedelta(days=1)
+
+        if ((currentTime - restartedAt).total_seconds() / 60.0) <= 1:
+            return
+
+        self.logs.info({'message': 'Deployment set to restart.', 'namespace': namespace,
+                        'deployment': deployName, 'restartTime': str(restartTime), 'currentTime': str(currentTime)})
+        self.k8s.rolloutDeployment(namespace, deployName)
 
     def execute(self):
         # Current time in UTC format
