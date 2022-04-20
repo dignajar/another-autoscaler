@@ -47,7 +47,7 @@ class AAutoscaler:
         try:
             if not croniter.match(startTime, currentTime):
                 return
-        except Exception as e:
+        except:
             self.logs.error(
                 {'message': 'Error in start-time annotation', 'namespace': namespace, 'deployment': deployName})
             return
@@ -66,7 +66,7 @@ class AAutoscaler:
         try:
             startReplicas = int(
                 deployAnnotations[startReplicasAnnotation])
-        except Exception as e:
+        except:
             startReplicas = 1
 
         if deployReplicas == startReplicas:
@@ -97,7 +97,7 @@ class AAutoscaler:
         try:
             if not croniter.match(stopTime, currentTime):
                 return
-        except Exception as e:
+        except:
             self.logs.error(
                 {'message': 'Error in stop-time annotation', 'namespace': namespace, 'deployment': deployName})
             return
@@ -117,7 +117,7 @@ class AAutoscaler:
         try:
             stopReplicas = int(
                 deployAnnotations[stopReplicasAnnotation])
-        except Exception as e:
+        except:
             stopReplicas = 0
 
         if deployReplicas == stopReplicas:
@@ -148,7 +148,7 @@ class AAutoscaler:
 
             if not croniter.match(restartTime, currentTime):
                 return
-        except Exception as e:
+        except:
             self.logs.error(
                 {'message': 'Error in restart-time annotation', 'namespace': namespace, 'deployment': deployName})
             return
@@ -160,7 +160,7 @@ class AAutoscaler:
         try:
             restartedAt = parser.parse(
                 deploy.spec.template.metadata.annotations['kubectl.kubernetes.io/restartedAt'])
-        except Exception as e:
+        except:
             restartedAt = currentTime - timedelta(days=1)
 
         if ((currentTime - restartedAt).total_seconds() / 60.0) <= 1:
