@@ -1,4 +1,4 @@
-kubernetes
-schedule
-croniter
-pytz
+kubernetes==23.3.0
+schedule==1.1.0
+croniter==1.3.4
+pytz==2022.1
