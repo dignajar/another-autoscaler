@@ -1,7 +1,5 @@
 import os
-from croniter import croniter
-from datetime import datetime, timezone, timedelta
-from dateutil import parser
+from datetime import datetime, timezone
 from deployments import Deployments
 from cronjobs import Cronjobs
 from logs import Logs
@@ -34,7 +32,7 @@ class AAutoscaler:
                 self.deployments.__restart__(
                     namespaceName, deploy, currentTime
                 )
-             # For each deployment inside the namespace
+            # For each cronjob inside the namespace
             cronjobs = self.k8s.getCronjobs(namespaceName)
             for cronjob in cronjobs:
                 self.cronjobs.__enable__(namespaceName, cronjob, currentTime)

@@ -54,8 +54,8 @@ class K8s:
 
         if K8s.__instance != None:
             raise Exception("This class is a singleton!")
-        else:
-            K8s.__instance = self
+
+        K8s.__instance = self
 
     def getNamespaces(self) -> list:
         '''
@@ -217,7 +217,7 @@ class K8s:
             namespace=namespace, name=podName, body={})
         return response
 
-    def getCronjobs(self, namespace, labelSelector: str = False) -> list:
+    def getCronjobs(self, namespace) -> list:
         try:
             response = self.BatchV1Api.list_namespaced_cron_job(
                 namespace=namespace)

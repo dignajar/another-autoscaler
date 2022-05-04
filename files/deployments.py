@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
 from croniter import croniter
 from dateutil import parser
 from k8s import K8s
