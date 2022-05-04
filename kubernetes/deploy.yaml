@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apache
+  annotations:
+    'another-autoscaler/start-time': '*/2 * * * *'
+    'another-autoscaler/start-replicas': '3'
+    'another-autoscaler/stop-time': '1-59/2 * * * *'
+    'another-autoscaler/stop-replicas': '0'
+spec:
+  selector:
+    matchLabels:
+      app: apache
+  replicas: 5
+  template:
+    metadata:
+      labels:
+        app: apache
+    spec:
+      containers:
+        - image: httpd:alpine
+          name: apache

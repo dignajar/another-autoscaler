@@ -103,3 +103,23 @@ spec:
 
 ## GitOps / FluxCD
 To avoid conflicts with Flux and Another Autoscaler, you can remove the field `spec.replicas` from your deployment manifest and leave Another Autoscaler to manage the number of replicas.
+
+## Docker and Minikube development environment
+
+This step allows developer to create a kubernetes environment.
+
+Requirements: [Minikube](https://minikube.sigs.k8s.io/docs/) and [Docker](https://docs.docker.com/engine/)
+
+```
+minikube start
+minikube addons enable registry
+docker build -t localhost:49155/another-autoscaler:latest .
+docker push localhost:49155/another-autoscaler:latest
+
+```
+
+To discard environment
+```
+minikube stop
+minikube delete
+```
