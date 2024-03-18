@@ -19,5 +19,5 @@ if mode == 'daemon':
         schedule.run_pending()
         time.sleep(1)
 else:
-    Logs(self.__class__.__name__).info({'message': 'Running once then exit.'})
+    Logs(__name__).info({'message': 'Running once then exit.'})
     aautoscaler.execute()
