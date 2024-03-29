@@ -25,10 +25,14 @@ class K8s:
         # Client via in-cluster configuration,
         # running inside a pod with proper service account
         else:
-            config.load_incluster_config()
-            self.CoreV1Api = client.CoreV1Api()
-            self.AppsV1Api = client.AppsV1Api()
-            self.NetworkingV1Api = client.NetworkingV1Api()
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+            my_config = client.Configuration()
+            config.load_incluster_config(client_configuration=my_config)
+            my_config.verify_ssl = False
+            
+            self.CoreV1Api = client.CoreV1Api(client.ApiClient(my_config))
+            self.AppsV1Api = client.AppsV1Api(client.ApiClient(my_config))
+            self.NetworkingV1Api = client.NetworkingV1Api(client.ApiClient(my_config))
 
     def getNamespaces(self) -> list:
         '''
